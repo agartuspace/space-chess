@@ -57,6 +57,9 @@ shell-db:
 	docker compose exec postgres psql -U chess -d chess_db
 
 # ─── SSL (run once on fresh VPS) ─────────────────────────────────────────────
+ssl-bootstrap:
+	bash scripts/init-ssl.sh
+
 ssl-init:
 	docker compose -f docker-compose.yml -f docker-compose.prod.yml run --rm certbot \
 		certbot certonly --webroot -w /var/www/certbot \

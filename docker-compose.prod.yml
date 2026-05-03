@@ -1,5 +1,3 @@
-version: "3.9"
-
 # Production overrides — nginx reverse proxy + SSL
 services:
   backend:

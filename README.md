@@ -1,55 +1,66 @@
 # Space Chess · Agartu
 
-Монорепозиторий в духе [reference architecture](./docs/reference-architecture.md): **frontend** и **backend** живут как соседние папки в корне, **docs** для ТЗ и внешней документации.
+**Space Chess** — это образовательная платформа для игры в шахматы с использованием генеративного искусственного интеллекта.
 
-## Структура репозитория
+Этот проект не просто повторяет классические шахматные доски. Наша миссия — создать персонализированную, современную и увлекательную среду обучения (эстетика "Aurora", космос), где игрок получает не только анализ ходов "хорошо/плохо", но и живого, общающегося наставника.
 
-```
-chess-learning/
-├── frontend/           # Next.js (App Router) — приложение Space Chess / Ustaz
-├── backend/            # FastAPI, SQLAlchemy, Alembic, Stockfish CLI
-├── docs/               # ТЗ, reference architecture, заметки по ElevenLabs
-├── nginx/              # Обратный прокси + SSL для production Compose
-├── docker-compose.yml           # Общее: postgres, redis, backend, frontend
-├── docker-compose.dev.yml       # Hot-reload, порты локально
-├── docker-compose.prod.yml      # nginx + certbot поверх базового compose
-├── Makefile            # См. команды ниже
-└── .env.example        # Образец переменных (скопировать в .env в корень)
-```
+## 🚀 Наш подход и отличия
 
-**Полный пошаговый гайд** (локально, Docker, ElevenLabs, ключи, troubleshooting): [`docs/local-run-guide.md`](./docs/local-run-guide.md).
+В отличие от стандартных платформ (уровень "Средний/Сильный" из нашего ТЗ), **Space Chess** реализует "Великий" уровень продукта:
 
-## Быстрый старт (Docker)
+*   **Голосовой ИИ-наставник (Ustaz):** Интеграция с Conversational AI от **ElevenLabs**. Ustaz не просто пишет текст, он общается с вами голосом, анализирует ваши ходы через Stockfish, комментирует ошибки, хвалит за хорошие решения и обучает шахматным принципам прямо во время игры или после нее.
+*   **Глубокий анализ:** Платформа использует связку клиентского Stockfish (WASM) для мгновенной оценки и серверного Stockfish (FastAPI + python-chess) для подготовки контекста для агента.
+*   **Современный стек (Vibe Coding):** Мы используем мощные и современные инструменты:
+    *   **Frontend:** Next.js 16 (App Router), Zustand, shadcn/ui, Tailwind CSS (v4), Framer Motion.
+    *   **Backend:** FastAPI, PostgreSQL, Redis, SQLAlchemy (asyncpg), Alembic.
+    *   **Infrastructure:** Docker, Docker Compose, Nginx (для production).
+*   **Калибровка и прогресс:** Платформа учитывает уровень игрока (от новичка до мастера) и подстраивает рекомендации наставника и сложность задач.
 
-Из **корня** репозитория:
+## 📂 Структура репозитория
 
-1. Скопируйте переменные: `copy .env.example .env` (Windows) или `cp .env.example .env`.
-2. Заполните секреты (`SECRET_KEY`, `ELEVENLABS_*`, при необходимости `ANTHROPIC_*`).
-3. Запуск разработки: `make dev` (или `make dev-d`).
-4. Приложение: `http://localhost:3000` → редирект на `/space-chess`. API: `http://localhost:8000`, health — `GET /health`.
+Проект организован как монорепозиторий:
 
-Production на VPS (`space-chess.agartu.space` и т.п.): `make prod`, первичный выпуск сертификата — см. секцию про SSL в этом файле ниже после настройки DNS.
-
-## Локальный фронтенд без Docker
-
-```powershell
-cd frontend
-npm install
-npm run dev
+```text
+space-chess/
+├── frontend/                    # Next.js (App Router) — клиентская часть и интерфейс Aurora
+├── backend/                     # FastAPI — бизнес-логика, интеграция Stockfish и LLM
+├── docs/                        # (локально, не в git) ТЗ, архитектура, deploy-vps и т.д.
+├── nginx/                       # Конфигурация обратного прокси и SSL (для production)
+├── docker-compose.yml           # Основной compose-файл
+├── docker-compose.dev.yml       # Overrides для локальной разработки (hot-reload)
+├── docker-compose.prod.yml      # Overrides для продакшена (nginx, certbot)
+├── Makefile                     # Утилиты и быстрые команды
+└── .env.example                 # Шаблон переменных окружения
 ```
 
-Для того чтобы запросы к API шли на тот же origin и не упирались в CORS, используйте переменную `NEXT_PUBLIC_API_URL=http://localhost:8000`, либо оставьте пустым и положитесь на `rewrites` в `frontend/next.config.ts` (режим без Docker подставляет backend на `:8000`).
+## 🛠 Быстрый старт (Разработка)
 
-## Основные Make-команды
+Самый быстрый способ развернуть проект локально — использовать Docker.
 
-| Команда | Назначение |
-| -------- | ----------- |
-| `make dev` / `make dev-d` | Compose dev с hot reload |
-| `make prod` | Compose prod (+ nginx/certbot профиль) |
-| `make migrate` | `alembic upgrade head` в контейнере backend |
-| `make seed` | Заготовка данных (stub) |
-| `make logs` | Логи всех сервисов |
+1.  **Настройте переменные окружения:**
+    Скопируйте пример конфига в корень проекта.
+    ```bash
+    cp .env.example .env
+    ```
+    Заполните `SECRET_KEY`, `ELEVENLABS_API_KEY` и `ELEVENLABS_AGENT_ID` (если нужен голос).
 
-## Продукт
+2.  **Запустите стек разработки:**
+    В корне выполните команду (требуется `make` и `docker`):
+    ```bash
+    make dev
+    # Или для запуска в фоновом режиме: make dev-d
+    ```
 
-**Space Chess** — обучение шахматам в стиле Agartu Space: доска «Aurora», голосовой наставник **Ustaz** (ElevenLabs Conversational Agent + Stockfish/Web на клиенте и сервере), онбординг с калибровкой по задачам, журнал прогресса (по мере реализации API).
+3.  **Откройте приложение:**
+    *   Клиент (UI): [http://localhost:3000](http://localhost:3000) (перенаправит на `/space-chess`)
+    *   API Backend: [http://localhost:8000](http://localhost:8000) (проверка здоровья: `/health`)
+
+*При первом запуске база данных и миграции (Alembic) настроятся автоматически.*
+
+## 🌍 Развертывание на сервере (Production)
+
+Гайд по VPS (Docker, nginx, Let’s Encrypt, домен `space-chess.agartu.space`) лежит в **`docs/deploy/deploy-vps.md`** — каталог `docs/` **не коммитится** в этот репозиторий; держите копию у себя или во внутренней wiki и передавайте команде отдельно.
+
+## 📚 Документация разработчика
+
+Файлы в `docs/` (ТЗ, архитектура, `local-run-guide`, ElevenLabs и т.д.) — **только локально**; в удалённом репозитории их нет. Доступ к материалам — через команду Agartu или общий диск.
