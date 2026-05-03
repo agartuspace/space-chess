@@ -4,9 +4,9 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useShallow } from 'zustand/react/shallow'
 import { useGameStore } from '../../stores/game-store'
 
-const FREE_FEATURES = ['15 мин Устаза в день', '3 задачи за партию', 'Журнал прогресса']
+const FREE_FEATURES = ['15 мин Ұстаза в день', '3 задачи за партию', 'Журнал прогресса']
 const PRO_FEATURES = [
-  'Неограниченное время с Устазом',
+  'Неограниченное время с Ұстазом',
   'Экспорт PGN с голосовыми комментариями',
   'Глубокая персонализация обучения',
   'Приоритетный доступ к новым функциям',
@@ -39,28 +39,36 @@ export default function ProModal() {
               zIndex: 100,
             }}
           />
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
+          <div
             style={{
               position: 'fixed',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
+              inset: 0,
               zIndex: 101,
-              width: '90%',
-              maxWidth: 480,
-              background: 'rgba(13, 20, 36, 0.97)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              border: '1px solid rgba(245, 158, 11, 0.25)',
-              borderRadius: 24,
-              padding: '32px',
-              boxShadow: '0 24px 48px rgba(0,0,0,0.5), 0 0 40px rgba(245, 158, 11, 0.08)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 24,
+              pointerEvents: 'none',
             }}
           >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 16 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              style={{
+                pointerEvents: 'auto',
+                position: 'relative',
+                width: 'min(480px, calc(100vw - 48px))',
+                background: 'rgba(13, 20, 36, 0.97)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                border: '1px solid rgba(245, 158, 11, 0.25)',
+                borderRadius: 24,
+                padding: '32px',
+                boxShadow: '0 24px 48px rgba(0,0,0,0.5), 0 0 40px rgba(245, 158, 11, 0.08)',
+              }}
+            >
             {/* Close */}
             <button
               onClick={() => setProModalOpen(false)}
@@ -96,7 +104,7 @@ export default function ProModal() {
                 Space Chess Pro
               </h2>
               <p style={{ color: '#94a3b8', fontSize: 14, margin: 0 }}>
-                Разблокируйте полный потенциал Устаза
+                Разблокируйте полный потенциал Ұстаза
               </p>
             </div>
 
@@ -207,7 +215,8 @@ export default function ProModal() {
             <p style={{ color: '#475569', fontSize: 12, textAlign: 'center', marginTop: 12, marginBottom: 0 }}>
               Оплата через FreedomPay · Доступно скоро
             </p>
-          </motion.div>
+            </motion.div>
+          </div>
         </>
       )}
     </AnimatePresence>

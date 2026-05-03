@@ -136,7 +136,8 @@ function LoginTab() {
         throw new Error('Сервер не вернул идентификатор профиля')
       }
 
-      setUser(data.user_id, null, false)
+      const local = email.includes('@') ? email.split('@')[0] : email
+      setUser(data.user_id, null, false, { email, displayName: local || 'Игрок' })
       setAuthModalOpen(false)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ошибка')
@@ -200,7 +201,8 @@ function RegisterTab() {
         throw new Error('Сервер не вернул идентификатор профиля')
       }
 
-      setUser(data.user_id, null, false)
+      const displayName = username.trim() || (email.includes('@') ? email.split('@')[0] : email) || 'Игрок'
+      setUser(data.user_id, null, false, { email, displayName })
       setAuthModalOpen(false)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ошибка')
@@ -315,28 +317,36 @@ export default function AuthModal() {
       {authModalOpen && (
         <>
           <Overlay onClick={() => setAuthModalOpen(false)} />
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
+          {/* Flex centering: Framer Motion overwrites CSS `transform`, so translate(-50%,-50%) + animate y breaks layout */}
+          <div
             style={{
               position: 'fixed',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
+              inset: 0,
               zIndex: 101,
-              width: '90%',
-              maxWidth: 400,
-              background: 'rgba(13, 20, 36, 0.95)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              border: '1px solid rgba(124, 58, 237, 0.25)',
-              borderRadius: 20,
-              padding: '28px 28px 32px',
-              boxShadow: '0 24px 48px rgba(0,0,0,0.5)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 24,
+              pointerEvents: 'none',
             }}
           >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 16 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              style={{
+                pointerEvents: 'auto',
+                width: 'min(400px, calc(100vw - 48px))',
+                background: 'rgba(13, 20, 36, 0.95)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                border: '1px solid rgba(124, 58, 237, 0.25)',
+                borderRadius: 20,
+                padding: '28px 28px 32px',
+                boxShadow: '0 24px 48px rgba(0,0,0,0.5)',
+              }}
+            >
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 24 }}>
               <h2
                 style={{
@@ -396,7 +406,8 @@ export default function AuthModal() {
                 {activeTab === 'guest' && <GuestTab />}
               </motion.div>
             </AnimatePresence>
-          </motion.div>
+            </motion.div>
+          </div>
         </>
       )}
     </AnimatePresence>

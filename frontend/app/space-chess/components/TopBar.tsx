@@ -1,26 +1,82 @@
 'use client'
 
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useHydrationSafeReducedMotion } from '../hooks/use-hydration-safe-reduced-motion'
 import { useShallow } from 'zustand/react/shallow'
 import { useGameStore } from '../stores/game-store'
+import { persistAccessToken } from '@/lib/auth-token'
+
+const LEVEL_LABELS: Record<string, string> = {
+  beginner: 'Начинающий',
+  intermediate: 'Средний',
+  advanced: 'Продвинутый',
+}
+
+function shortUserId(id: string): string {
+  return id.length > 10 ? `${id.slice(0, 8)}…` : id
+}
 
 export default function TopBar() {
   const prefersReducedMotion = useHydrationSafeReducedMotion()
-  const { userId, isGuest, setJournalOpen, setProModalOpen, setUstazExplainerOpen, setAuthModalOpen } =
-    useGameStore(
-      useShallow((s) => ({
-        userId: s.userId,
-        isGuest: s.isGuest,
-        setJournalOpen: s.setJournalOpen,
-        setProModalOpen: s.setProModalOpen,
-        setUstazExplainerOpen: s.setUstazExplainerOpen,
-        setAuthModalOpen: s.setAuthModalOpen,
-      })),
-    )
+  const [profileOpen, setProfileOpen] = useState(false)
+  const profileWrapRef = useRef<HTMLDivElement>(null)
+
+  const {
+    userId,
+    isGuest,
+    accountEmail,
+    accountDisplayName,
+    chessLevel,
+    setJournalOpen,
+    setProModalOpen,
+    setUstazExplainerOpen,
+    setAuthModalOpen,
+    setUser,
+  } = useGameStore(
+    useShallow((s) => ({
+      userId: s.userId,
+      isGuest: s.isGuest,
+      accountEmail: s.accountEmail,
+      accountDisplayName: s.accountDisplayName,
+      chessLevel: s.chessLevel,
+      setJournalOpen: s.setJournalOpen,
+      setProModalOpen: s.setProModalOpen,
+      setUstazExplainerOpen: s.setUstazExplainerOpen,
+      setAuthModalOpen: s.setAuthModalOpen,
+      setUser: s.setUser,
+    })),
+  )
 
   const isLoggedIn = !!(userId && !isGuest)
-  const userInitial = isLoggedIn ? 'U' : null
+  const avatarLetter = (
+    accountDisplayName?.trim().charAt(0) ||
+    accountEmail?.trim().charAt(0) ||
+    (userId ? userId.charAt(0) : 'U')
+  ).toUpperCase()
+
+  useEffect(() => {
+    if (!profileOpen) return
+    const onPointerDown = (e: MouseEvent) => {
+      const el = profileWrapRef.current
+      if (el && !el.contains(e.target as Node)) setProfileOpen(false)
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setProfileOpen(false)
+    }
+    document.addEventListener('mousedown', onPointerDown)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [profileOpen])
+
+  const handleLogout = () => {
+    persistAccessToken(null)
+    setUser(null, null, false)
+    setProfileOpen(false)
+  }
 
   return (
     <motion.header
@@ -71,27 +127,109 @@ export default function TopBar() {
         </TopBarButton>
 
         {isLoggedIn ? (
-          <button
-            onClick={() => setAuthModalOpen(true)}
-            title="Профиль"
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: '50%',
-              background: 'linear-gradient(135deg, #7c3aed, #06b6d4)',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#fff',
-              fontWeight: 600,
-              fontSize: 14,
-              fontFamily: "'Space Grotesk', sans-serif",
-            }}
-          >
-            {userInitial}
-          </button>
+          <div ref={profileWrapRef} style={{ position: 'relative' }}>
+            <button
+              type="button"
+              onClick={() => setProfileOpen((o) => !o)}
+              title="Профиль"
+              aria-expanded={profileOpen}
+              aria-haspopup="true"
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #7c3aed, #06b6d4)',
+                border: profileOpen ? '2px solid rgba(6, 182, 212, 0.7)' : '2px solid transparent',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#fff',
+                fontWeight: 600,
+                fontSize: 14,
+                fontFamily: "'Space Grotesk', sans-serif",
+              }}
+            >
+              {avatarLetter}
+            </button>
+
+            {profileOpen && (
+              <div
+                role="menu"
+                style={{
+                  position: 'absolute',
+                  top: 'calc(100% + 10px)',
+                  right: 0,
+                  minWidth: 260,
+                  maxWidth: 'min(320px, calc(100vw - 32px))',
+                  padding: '16px 18px',
+                  borderRadius: 14,
+                  background: 'rgba(13, 20, 36, 0.96)',
+                  backdropFilter: 'blur(16px)',
+                  WebkitBackdropFilter: 'blur(16px)',
+                  border: '1px solid rgba(124, 58, 237, 0.28)',
+                  boxShadow: '0 16px 40px rgba(0,0,0,0.45)',
+                  zIndex: 200,
+                  textAlign: 'left',
+                }}
+              >
+                <p
+                  style={{
+                    margin: '0 0 4px',
+                    fontSize: 16,
+                    fontWeight: 700,
+                    color: '#f8fafc',
+                    fontFamily: "'Space Grotesk', sans-serif",
+                  }}
+                >
+                  {accountDisplayName?.trim() || 'Игрок'}
+                </p>
+                <p
+                  style={{
+                    margin: '0 0 12px',
+                    fontSize: 13,
+                    color: '#94a3b8',
+                    wordBreak: 'break-word',
+                  }}
+                >
+                  {accountEmail?.trim() || (userId ? shortUserId(userId) : '')}
+                </p>
+                <div
+                  style={{
+                    fontSize: 12,
+                    color: '#64748b',
+                    marginBottom: 14,
+                    paddingTop: 10,
+                    borderTop: '1px solid rgba(124, 58, 237, 0.15)',
+                  }}
+                >
+                  Уровень:{' '}
+                  <span style={{ color: '#cbd5e1', fontWeight: 600 }}>
+                    {LEVEL_LABELS[chessLevel] ?? chessLevel}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={handleLogout}
+                  style={{
+                    width: '100%',
+                    padding: '9px 12px',
+                    borderRadius: 8,
+                    border: '1px solid rgba(148, 163, 184, 0.25)',
+                    background: 'rgba(255,255,255,0.05)',
+                    color: '#e2e8f0',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    fontFamily: "'Space Grotesk', sans-serif",
+                  }}
+                >
+                  Выйти
+                </button>
+              </div>
+            )}
+          </div>
         ) : (
           <TopBarButton
             onClick={() => setAuthModalOpen(true)}

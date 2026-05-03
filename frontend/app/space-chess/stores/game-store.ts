@@ -34,6 +34,9 @@ export interface TranscriptMessage {
   ts: number
 }
 
+/** Saved on login/register for UI (e.g. profile menu). Cleared for guests and logout. */
+export type AccountProfile = { email: string; displayName: string }
+
 export interface GameState {
   // Scene management
   scene: Scene
@@ -89,7 +92,14 @@ export interface GameState {
   userId: string | null
   guestId: string | null
   isGuest: boolean
-  setUser: (userId: string | null, guestId: string | null, isGuest: boolean) => void
+  accountEmail: string | null
+  accountDisplayName: string | null
+  setUser: (
+    userId: string | null,
+    guestId: string | null,
+    isGuest: boolean,
+    profile?: AccountProfile | null,
+  ) => void
 
   // UI modals
   authModalOpen: boolean
@@ -108,7 +118,13 @@ const INITIAL_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
 
 type PersistedState = Pick<
   GameState,
-  'chessLevel' | 'userId' | 'guestId' | 'isGuest' | 'calibrationScore'
+  | 'chessLevel'
+  | 'userId'
+  | 'guestId'
+  | 'isGuest'
+  | 'calibrationScore'
+  | 'accountEmail'
+  | 'accountDisplayName'
 >
 
 export const useGameStore = create<GameState>()(
@@ -176,7 +192,37 @@ export const useGameStore = create<GameState>()(
       userId: null,
       guestId: null,
       isGuest: false,
-      setUser: (userId, guestId, isGuest) => set({ userId, guestId, isGuest }),
+      accountEmail: null,
+      accountDisplayName: null,
+      setUser: (userId, guestId, isGuest, profile) =>
+        set((state) => {
+          const noRegisteredSession = !userId || isGuest
+          if (noRegisteredSession) {
+            return {
+              userId,
+              guestId,
+              isGuest,
+              accountEmail: null,
+              accountDisplayName: null,
+            }
+          }
+          if (profile != null) {
+            return {
+              userId,
+              guestId,
+              isGuest,
+              accountEmail: profile.email,
+              accountDisplayName: profile.displayName,
+            }
+          }
+          return {
+            userId,
+            guestId,
+            isGuest,
+            accountEmail: state.accountEmail,
+            accountDisplayName: state.accountDisplayName,
+          }
+        }),
 
       // UI modals
       authModalOpen: false,
@@ -198,7 +244,18 @@ export const useGameStore = create<GameState>()(
         guestId: state.guestId,
         isGuest: state.isGuest,
         calibrationScore: state.calibrationScore,
+        accountEmail: state.accountEmail,
+        accountDisplayName: state.accountDisplayName,
       }),
+      merge: (persisted, current) => {
+        const p = persisted as Partial<PersistedState>
+        return {
+          ...current,
+          ...p,
+          accountEmail: p.accountEmail ?? null,
+          accountDisplayName: p.accountDisplayName ?? null,
+        }
+      },
     },
   ),
 )

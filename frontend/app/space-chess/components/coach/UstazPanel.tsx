@@ -103,7 +103,7 @@ function TranscriptBubble({ role, text }: { role: 'user' | 'agent'; text: string
               letterSpacing: '0.08em',
             }}
           >
-            Устаз
+            Ұстаз
           </span>
         )}
         {text}
@@ -184,7 +184,7 @@ export default function UstazPanel() {
             color: '#f8fafc',
           }}
         >
-          Устаз
+          Ұстаз
         </span>
         {isCoachActive && (
           <motion.div
@@ -237,7 +237,7 @@ export default function UstazPanel() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
           <img
             src="/space-chess/ustaz-avatar.svg"
-            alt="Устаз"
+            alt="Ұстаз"
             width={44}
             height={44}
             style={{
@@ -257,7 +257,7 @@ export default function UstazPanel() {
                 fontFamily: "'Space Grotesk', sans-serif",
               }}
             >
-              Устаз
+              Ұстаз
             </p>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4, flexWrap: 'wrap' }}>
               <StatusBadge status={coachStatus} />
@@ -316,7 +316,7 @@ export default function UstazPanel() {
                 value={textInput}
                 onChange={(e) => setTextInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSendText()}
-                placeholder="Напишите Устазу..."
+                placeholder="Напишите Ұстазу..."
                 style={{
                   flex: 1,
                   padding: '8px 12px',
@@ -386,7 +386,7 @@ export default function UstazPanel() {
           }}
         >
           <span>{isCoachActive ? '⏹' : '🎙'}</span>
-          {isCoachActive ? 'Завершить сессию' : 'Говорить с Устазом'}
+          {isCoachActive ? 'Завершить сессию' : 'Говорить с Ұстазом'}
         </button>
 
         {/* Secondary controls */}
@@ -431,11 +431,11 @@ export default function UstazPanel() {
 
         {/* Footer status */}
         <p style={{ color: '#475569', fontSize: 11, margin: 0, textAlign: 'center' }}>
-          {coachStatus === 'idle' && 'Устаз ждёт вашего хода'}
+          {coachStatus === 'idle' && 'Ұстаз ждёт вашего хода'}
           {coachStatus === 'connecting' && 'Устанавливается связь...'}
           {coachStatus === 'listening' && '🎤 Говорите сейчас'}
           {coachStatus === 'thinking' && '🧠 Анализирует позицию...'}
-          {coachStatus === 'speaking' && '🔊 Устаз говорит'}
+          {coachStatus === 'speaking' && '🔊 Ұстаз говорит'}
           {coachStatus === 'error' && '⚠️ Ошибка подключения'}
         </p>
       </div>

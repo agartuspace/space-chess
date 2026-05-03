@@ -10,19 +10,19 @@ const STEPS = [
     icon: '🧙‍♂️',
     title: 'Ваш шахматный наставник',
     description:
-      'Устаз — мудрый ИИ-тренер, который говорит с вами во время игры. Он заметит ошибки, объяснит принципы и поддержит в трудный момент. Как настоящий наставник, он знает когда промолчать, а когда сказать нужное слово.',
+      'Ұстаз — мудрый ИИ-тренер, который говорит с вами во время игры. Он заметит ошибки, объяснит принципы и поддержит в трудный момент. Как настоящий наставник, он знает когда промолчать, а когда сказать нужное слово.',
   },
   {
     icon: '🧠',
     title: 'Умный анализ в реальном времени',
     description:
-      'Устаз видит каждый ваш ход. Встроенный Stockfish вычисляет оценку позиции, выявляет ошибки и угрозы. Устаз интерпретирует сухие цифры на человеческом языке — помогает понять "почему", а не просто "что".',
+      'Ұстаз видит каждый ваш ход. Встроенный Stockfish вычисляет оценку позиции, выявляет ошибки и угрозы. Ұстаз интерпретирует сухие цифры на человеческом языке — помогает понять "почему", а не просто "что".',
   },
   {
     icon: '🔄',
     title: 'Учёба через практику',
     description:
-      'Мы используем цикл Колба: сделал ход → получил опыт → разобрал с Устазом → понял принцип → применил в следующей игре. Устаз предложит перемотать позицию после блюндера, покажет лучший ход и объяснит тактическую тему.',
+      'Мы используем цикл Колба: сделал ход → получил опыт → разобрал с Ұстазом → понял принцип → применил в следующей игре. Ұстаз предложит перемотать позицию после блюндера, покажет лучший ход и объяснит тактическую тему.',
   },
 ]
 
@@ -57,28 +57,36 @@ export default function UstazExplainerModal() {
               zIndex: 100,
             }}
           />
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
+          <div
             style={{
               position: 'fixed',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
+              inset: 0,
               zIndex: 101,
-              width: '90%',
-              maxWidth: 480,
-              background: 'rgba(13, 20, 36, 0.95)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              border: '1px solid rgba(124, 58, 237, 0.25)',
-              borderRadius: 24,
-              padding: '36px 36px 32px',
-              boxShadow: '0 24px 48px rgba(0,0,0,0.5)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 24,
+              pointerEvents: 'none',
             }}
           >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 16 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+              style={{
+                pointerEvents: 'auto',
+                position: 'relative',
+                width: 'min(480px, calc(100vw - 48px))',
+                background: 'rgba(13, 20, 36, 0.95)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                border: '1px solid rgba(124, 58, 237, 0.25)',
+                borderRadius: 24,
+                padding: '36px 36px 32px',
+                boxShadow: '0 24px 48px rgba(0,0,0,0.5)',
+              }}
+            >
             {/* Close */}
             <button
               onClick={() => setUstazExplainerOpen(false)}
@@ -206,11 +214,12 @@ export default function UstazExplainerModal() {
                     boxShadow: '0 0 20px rgba(124, 58, 237, 0.3)',
                   }}
                 >
-                  Познакомиться с Устазом
+                  Познакомиться с Ұстаз
                 </button>
               )}
             </div>
-          </motion.div>
+            </motion.div>
+          </div>
         </>
       )}
     </AnimatePresence>

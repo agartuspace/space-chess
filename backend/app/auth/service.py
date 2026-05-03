@@ -1,8 +1,8 @@
 import uuid
 from datetime import datetime, timedelta
 
+import bcrypt
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends, HTTPException, status
@@ -13,16 +13,28 @@ from app.auth.schemas import Token, UserCreate
 from app.core.config import settings
 from app.core.database import get_db
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 bearer_scheme = HTTPBearer(auto_error=False)
+
+# bcrypt only uses the first 72 bytes of UTF-8; longer passwords must be truncated explicitly.
+_BCRYPT_MAX_BYTES = 72
+
+
+def _password_bytes(plain: str) -> bytes:
+    b = plain.encode("utf-8")
+    if len(b) > _BCRYPT_MAX_BYTES:
+        return b[:_BCRYPT_MAX_BYTES]
+    return b
 
 
 def _hash_password(plain: str) -> str:
-    return pwd_context.hash(plain)
+    return bcrypt.hashpw(_password_bytes(plain), bcrypt.gensalt()).decode("ascii")
 
 
 def _verify_password(plain: str, hashed: str) -> bool:
-    return pwd_context.verify(plain, hashed)
+    try:
+        return bcrypt.checkpw(_password_bytes(plain), hashed.encode("ascii"))
+    except ValueError:
+        return False
 
 
 def _create_token(subject: str, expires_delta: timedelta, token_type: str = "access") -> str:

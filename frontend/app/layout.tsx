@@ -15,8 +15,8 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: 'Space Chess | Agartu',
-  description: 'Изучайте шахматы с ИИ-наставником Устаз в пространстве Agartu Space',
-  keywords: 'chess, шахматы, обучение, ИИ, Устаз, Agartu',
+  description: 'Изучайте шахматы с ИИ-наставником Ұстаз в пространстве Agartu Space',
+  keywords: 'chess, шахматы, обучение, ИИ, Ұстаз, Agartu',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
