@@ -32,12 +32,8 @@ export default function TopBar() {
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '12px 24px',
-        background: 'rgba(13, 20, 36, 0.7)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-        borderBottom: '1px solid rgba(124, 58, 237, 0.2)',
-        position: 'sticky',
-        top: 0,
+        background: 'transparent',
+        position: 'relative',
         zIndex: 50,
       }}
     >
@@ -49,10 +45,7 @@ export default function TopBar() {
             fontFamily: "'Space Grotesk', sans-serif",
             fontWeight: 600,
             fontSize: 18,
-            background: 'linear-gradient(90deg, #7c3aed, #06b6d4)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
+            color: '#f8fafc',
           }}
         >
           Space Chess

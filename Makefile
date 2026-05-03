@@ -61,7 +61,7 @@ ssl-bootstrap:
 	bash scripts/init-ssl.sh
 
 ssl-init:
-	docker compose -f docker-compose.yml -f docker-compose.prod.yml run --rm certbot \
+	docker compose -f docker-compose.yml -f docker-compose.prod.yml run --rm --entrypoint "" certbot \
 		certbot certonly --webroot -w /var/www/certbot \
 		-d space-chess.agartu.space \
 		--email admin@agartu.space \

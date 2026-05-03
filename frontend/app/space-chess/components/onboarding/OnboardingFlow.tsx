@@ -26,13 +26,18 @@ function SceneWrapper({ children, sceneKey }: { children: React.ReactNode; scene
       exit="exit"
       transition={transition}
       style={{
+        flex: 1,
+        minHeight: 0,
+        width: '100%',
+        boxSizing: 'border-box',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        minHeight: '100vh',
-        padding: '24px',
+        padding: '16px 24px',
         textAlign: 'center',
+        overflowY: 'auto',
+        overflowX: 'hidden',
       }}
     >
       {children}
@@ -128,17 +133,7 @@ function CalibrateIntroScene() {
   const setScene = useGameStore((s) => s.setScene)
   return (
     <SceneWrapper sceneKey="calibrate_intro">
-      <div
-        style={{
-          background: 'rgba(13, 20, 36, 0.7)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          border: '1px solid rgba(124, 58, 237, 0.2)',
-          borderRadius: 24,
-          padding: '48px 64px',
-          maxWidth: 480,
-        }}
-      >
+      <div style={{ padding: '32px 24px', maxWidth: 520 }}>
         <div style={{ fontSize: 48, marginBottom: 16 }}>♟</div>
         <h2
           style={{
@@ -192,18 +187,7 @@ function CalibrateResultScene() {
 
   return (
     <SceneWrapper sceneKey="calibrate_result">
-      <div
-        style={{
-          background: 'rgba(13, 20, 36, 0.7)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          border: '1px solid rgba(124, 58, 237, 0.2)',
-          borderRadius: 24,
-          padding: '48px 64px',
-          maxWidth: 480,
-          textAlign: 'center',
-        }}
-      >
+      <div style={{ padding: '32px 24px', maxWidth: 520, textAlign: 'center' }}>
         <div style={{ fontSize: 56, marginBottom: 16 }}>{determined.emoji}</div>
         <h2
           style={{
@@ -247,14 +231,24 @@ export default function OnboardingFlow() {
   const scene = useGameStore((s) => s.scene)
 
   return (
-    <AnimatePresence mode="wait">
-      {scene === 'welcome' && <WelcomeScene />}
-      {scene === 'tagline' && <TaglineScene />}
-      {scene === 'calibrate_intro' && <CalibrateIntroScene />}
-      {(scene === 'calibrate_board' || scene === 'puzzle_1') && <PuzzleScene index={0} />}
-      {scene === 'puzzle_2' && <PuzzleScene index={1} />}
-      {scene === 'puzzle_3' && <PuzzleScene index={2} />}
-      {scene === 'calibrate_result' && <CalibrateResultScene />}
-    </AnimatePresence>
+    <div
+      style={{
+        flex: 1,
+        minHeight: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+      }}
+    >
+      <AnimatePresence mode="wait">
+        {scene === 'welcome' && <WelcomeScene />}
+        {scene === 'tagline' && <TaglineScene />}
+        {scene === 'calibrate_intro' && <CalibrateIntroScene />}
+        {(scene === 'calibrate_board' || scene === 'puzzle_1') && <PuzzleScene index={0} />}
+        {scene === 'puzzle_2' && <PuzzleScene index={1} />}
+        {scene === 'puzzle_3' && <PuzzleScene index={2} />}
+        {scene === 'calibrate_result' && <CalibrateResultScene />}
+      </AnimatePresence>
+    </div>
   )
 }

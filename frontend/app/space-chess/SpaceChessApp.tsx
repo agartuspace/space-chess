@@ -68,14 +68,14 @@ export default function SpaceChessApp() {
           </div>
         )}
 
-        {/* Layer 3: Main content — game locks to viewport; onboarding may scroll inside */}
+        {/* Layer 3: Main content — fills viewport; no document-level vertical scroll */}
         <div
           style={{
             position: 'relative',
             zIndex: 5,
             flex: 1,
             minHeight: 0,
-            overflow: isOnboarding ? 'auto' : 'hidden',
+            overflow: 'hidden',
             display: 'flex',
             flexDirection: 'column',
           }}

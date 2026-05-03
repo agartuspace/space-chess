@@ -172,11 +172,16 @@ export default function CalibrationBoard({ puzzleIndex }: Props) {
     [selected, board, chess, puzzle.solution, isWhiteTurn, status, attempts, addCalibrationPoint, handleAdvance],
   )
 
+  /** When the user plays Black, flip the board 180° so their pieces and back rank are at the bottom. */
+  const boardFlipped = !isWhiteTurn
+
   const renderBoard = () => {
     const rows = []
-    for (let rank = 7; rank >= 0; rank--) {
+    for (let vr = 0; vr < 8; vr++) {
       const cells = []
-      for (let file = 0; file < 8; file++) {
+      for (let fc = 0; fc < 8; fc++) {
+        const file = boardFlipped ? 7 - fc : fc
+        const rank = boardFlipped ? vr : 7 - vr
         const sq = coordsToSquare(file, rank)
         const isLight = (file + rank) % 2 === 1
         const piece = board[sq]
@@ -248,7 +253,7 @@ export default function CalibrationBoard({ puzzleIndex }: Props) {
         )
       }
       rows.push(
-        <div key={rank} style={{ display: 'flex', width: '100%' }}>
+        <div key={vr} style={{ display: 'flex', width: '100%' }}>
           {cells}
         </div>,
       )

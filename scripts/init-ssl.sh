@@ -47,7 +47,7 @@ echo "→ Step 4/5: Requesting Let's Encrypt certificate…"
 # Remove self-signed cert
 rm -rf ./certbot/conf/live/${DOMAIN}
 
-docker compose ${COMPOSE_FILES} run --rm certbot \
+docker compose ${COMPOSE_FILES} run --rm --entrypoint "" certbot \
   certbot certonly --webroot -w /var/www/certbot \
   -d ${DOMAIN} \
   --email ${EMAIL} \
