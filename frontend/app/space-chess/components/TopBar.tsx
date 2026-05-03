@@ -127,7 +127,16 @@ export default function TopBar() {
         </TopBarButton>
 
         {isLoggedIn ? (
-          <div ref={profileWrapRef} style={{ position: 'relative' }}>
+          <div
+            ref={profileWrapRef}
+            style={{
+              position: 'relative',
+              display: 'inline-flex',
+              lineHeight: 0,
+              flexShrink: 0,
+              verticalAlign: 'middle',
+            }}
+          >
             <button
               type="button"
               onClick={() => setProfileOpen((o) => !o)}
@@ -137,9 +146,14 @@ export default function TopBar() {
               style={{
                 width: 36,
                 height: 36,
+                padding: 0,
+                margin: 0,
+                boxSizing: 'border-box',
+                border: 'none',
                 borderRadius: '50%',
-                background: 'linear-gradient(135deg, #7c3aed, #06b6d4)',
-                border: profileOpen ? '2px solid rgba(6, 182, 212, 0.7)' : '2px solid transparent',
+                overflow: 'hidden',
+                appearance: 'none',
+                WebkitAppearance: 'none',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -147,7 +161,10 @@ export default function TopBar() {
                 color: '#fff',
                 fontWeight: 600,
                 fontSize: 14,
+                lineHeight: 1,
                 fontFamily: "'Space Grotesk', sans-serif",
+                background: 'linear-gradient(135deg, #7c3aed, #06b6d4)',
+                boxShadow: profileOpen ? '0 0 0 2px rgba(6, 182, 212, 0.85)' : 'none',
               }}
             >
               {avatarLetter}

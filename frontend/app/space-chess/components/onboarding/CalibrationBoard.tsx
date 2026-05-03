@@ -269,30 +269,47 @@ export default function CalibrationBoard({ puzzleIndex }: Props) {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, maxWidth: 480, width: '100%' }}>
-      {/* Header */}
-      <div style={{ textAlign: 'center' }}>
-        <div
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'stretch',
+        gap: 16,
+        maxWidth: 480,
+        width: '100%',
+      }}
+    >
+      {/* Task + status — одна строка, ширина как у доски */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: 12,
+          width: '100%',
+        }}
+      >
+        <span
           style={{
-            display: 'inline-block',
-            padding: '4px 14px',
-            borderRadius: 100,
-            background: 'rgba(124, 58, 237, 0.15)',
-            border: '1px solid rgba(124, 58, 237, 0.3)',
             color: '#94a3b8',
             fontSize: 13,
-            marginBottom: 8,
+            fontWeight: 500,
+            flexShrink: 0,
+            fontFamily: "'Inter', sans-serif",
           }}
         >
           Задача {puzzleIndex + 1} / 3 · Рейтинг {puzzle.rating}
-        </div>
+        </span>
         <h3
           style={{
-            color: statusColors[status],
-            fontSize: 16,
             margin: 0,
+            color: statusColors[status],
+            fontSize: 15,
+            fontWeight: 600,
             fontFamily: "'Space Grotesk', sans-serif",
             transition: 'color 0.3s',
+            textAlign: 'right',
+            minWidth: 0,
           }}
         >
           {statusTexts[status]}
@@ -314,37 +331,68 @@ export default function CalibrationBoard({ puzzleIndex }: Props) {
         {renderBoard()}
       </motion.div>
 
-      {/* Hint + Skip */}
-      <div style={{ display: 'flex', gap: 12 }}>
+      {/* Подсказка (иконка) и пропуск — на всю ширину доски, по краям */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          width: '100%',
+        }}
+      >
         <button
+          type="button"
           onClick={() => setShowHint(true)}
+          title={showHint ? puzzle.hint : 'Подсказка'}
+          aria-label="Подсказка"
           style={{
-            padding: '8px 18px',
-            borderRadius: 8,
-            background: 'rgba(255, 255, 255, 0.05)',
-            border: '1px solid rgba(124, 58, 237, 0.2)',
-            color: '#94a3b8',
-            fontSize: 13,
+            padding: 6,
+            margin: 0,
+            border: 'none',
+            background: 'transparent',
+            color: showHint ? '#06b6d4' : '#94a3b8',
+            fontSize: 22,
+            lineHeight: 1,
             cursor: 'pointer',
+            borderRadius: 8,
+            opacity: showHint ? 1 : 0.85,
           }}
         >
-          {showHint ? puzzle.hint : '💡 Подсказка'}
+          💡
         </button>
         <button
+          type="button"
           onClick={handleAdvance}
           style={{
-            padding: '8px 18px',
-            borderRadius: 8,
-            background: 'rgba(255, 255, 255, 0.05)',
-            border: '1px solid rgba(124, 58, 237, 0.2)',
+            padding: '6px 0',
+            margin: 0,
+            border: 'none',
+            background: 'transparent',
             color: '#94a3b8',
-            fontSize: 13,
+            fontSize: 14,
+            fontWeight: 500,
             cursor: 'pointer',
+            fontFamily: "'Inter', sans-serif",
           }}
         >
           Пропустить →
         </button>
       </div>
+
+      {showHint && (
+        <p
+          style={{
+            margin: '-8px 0 0',
+            fontSize: 13,
+            lineHeight: 1.5,
+            color: '#cbd5e1',
+            textAlign: 'center',
+            width: '100%',
+          }}
+        >
+          {puzzle.hint}
+        </p>
+      )}
     </div>
   )
 }
