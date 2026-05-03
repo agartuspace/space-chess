@@ -6,9 +6,13 @@ import { useGameStore } from '../../stores/game-store'
 export default function MoveHistory() {
   const history = useGameStore((s) => s.history)
   const bottomRef = useRef<HTMLDivElement>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    const el = scrollRef.current
+    if (el) {
+      el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+    }
   }, [history])
 
   const movePairs: Array<{ white: string; black?: string; moveNum: number }> = []
@@ -19,20 +23,17 @@ export default function MoveHistory() {
   return (
     <div
       style={{
-        background: 'rgba(13, 20, 36, 0.7)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-        border: '1px solid rgba(124, 58, 237, 0.2)',
-        borderRadius: 16,
-        padding: 16,
         height: '100%',
+        minHeight: 0,
         display: 'flex',
         flexDirection: 'column',
+        overflow: 'hidden',
       }}
     >
       <h3
         style={{
-          margin: '0 0 12px',
+          margin: '0 0 8px',
+          flexShrink: 0,
           fontSize: 13,
           fontWeight: 600,
           color: '#94a3b8',
@@ -45,12 +46,15 @@ export default function MoveHistory() {
       </h3>
 
       <div
+        ref={scrollRef}
         style={{
           flex: 1,
+          minHeight: 0,
           overflowY: 'auto',
           display: 'flex',
           flexDirection: 'column',
           gap: 2,
+          paddingRight: 2,
         }}
       >
         {movePairs.length === 0 ? (
@@ -80,7 +84,11 @@ export default function MoveHistory() {
                   {pair.moveNum}.
                 </span>
                 <MoveCell move={pair.white} isLatest={whiteIsLast} />
-                {pair.black && <MoveCell move={pair.black} isLatest={blackIsLast} />}
+                {pair.black ? (
+                  <MoveCell move={pair.black} isLatest={blackIsLast} />
+                ) : (
+                  <span aria-hidden />
+                )}
               </div>
             )
           })

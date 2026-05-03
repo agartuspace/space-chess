@@ -47,9 +47,12 @@ export default function SpaceChessApp() {
       <div
         style={{
           position: 'relative',
-          minHeight: '100vh',
+          height: '100dvh',
+          maxHeight: '100dvh',
           width: '100%',
           overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
         {/* Layer 0: Nebula gradient background */}
@@ -60,13 +63,23 @@ export default function SpaceChessApp() {
 
         {/* Layer 2: Top navigation (hidden on very first scenes) */}
         {!isEarlyOnboarding && (
-          <div style={{ position: 'relative', zIndex: 10 }}>
+          <div style={{ position: 'relative', zIndex: 10, flexShrink: 0 }}>
             <TopBar />
           </div>
         )}
 
-        {/* Layer 3: Main content */}
-        <div style={{ position: 'relative', zIndex: 5 }}>
+        {/* Layer 3: Main content — game locks to viewport; onboarding may scroll inside */}
+        <div
+          style={{
+            position: 'relative',
+            zIndex: 5,
+            flex: 1,
+            minHeight: 0,
+            overflow: isOnboarding ? 'auto' : 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
           {isOnboarding ? <OnboardingFlow /> : <GameView />}
         </div>
       </div>

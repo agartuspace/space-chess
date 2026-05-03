@@ -48,64 +48,62 @@ function GameInfo() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <div>
-        <p style={{ color: '#475569', fontSize: 11, margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-          Ваш уровень
-        </p>
-        <span
-          style={{
-            display: 'inline-block',
-            padding: '3px 12px',
-            borderRadius: 100,
-            background: 'rgba(124, 58, 237, 0.15)',
-            border: '1px solid rgba(124, 58, 237, 0.3)',
-            color: '#7c3aed',
-            fontSize: 13,
-            fontWeight: 600,
-          }}
-        >
-          {levelLabels[chessLevel]}
-        </span>
-      </div>
-      <div>
-        <p style={{ color: '#475569', fontSize: 11, margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-          Противник
-        </p>
-        <p style={{ color: '#f8fafc', fontSize: 14, margin: 0, fontWeight: 500 }}>
-          Stockfish · Уровень {opponentLevel}
-        </p>
-      </div>
-      <div>
-        <p style={{ color: '#475569', fontSize: 11, margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-          Цвет
-        </p>
-        <p style={{ color: '#f8fafc', fontSize: 14, margin: 0 }}>
-          {playerColor === 'white' ? '♔ Белые' : '♚ Чёрные'}
-        </p>
-      </div>
-      <div>
-        <p style={{ color: '#475569', fontSize: 11, margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-          Ходов сделано
-        </p>
-        <p style={{ color: '#f8fafc', fontSize: 14, margin: 0 }}>{history.length}</p>
-      </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <span
+        title="Ваш уровень"
+        style={{
+          display: 'inline-block',
+          alignSelf: 'flex-start',
+          padding: '3px 12px',
+          borderRadius: 100,
+          background: 'rgba(124, 58, 237, 0.15)',
+          border: '1px solid rgba(124, 58, 237, 0.3)',
+          color: '#7c3aed',
+          fontSize: 13,
+          fontWeight: 600,
+          cursor: 'default',
+        }}
+      >
+        {levelLabels[chessLevel]}
+      </span>
+      <p
+        title="Противник"
+        style={{ color: '#f8fafc', fontSize: 14, margin: 0, fontWeight: 500, cursor: 'default' }}
+      >
+        Stockfish · Уровень {opponentLevel}
+      </p>
+      <p title="Цвет" style={{ color: '#f8fafc', fontSize: 14, margin: 0, cursor: 'default' }}>
+        {playerColor === 'white' ? '♔ Белые' : '♚ Чёрные'}
+      </p>
+      <p title="Ходов сделано" style={{ color: '#f8fafc', fontSize: 14, margin: 0, cursor: 'default' }}>
+        {history.length}
+      </p>
     </div>
   )
 }
 
 export default function GameView() {
   return (
-    <>
+    <div
+      style={{
+        flex: 1,
+        minHeight: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        position: 'relative',
+      }}
+    >
       {/* Main layout */}
       <div
         style={{
+          flex: 1,
+          minHeight: 0,
           display: 'grid',
           gridTemplateColumns: '220px 1fr 300px',
-          gridTemplateRows: '1fr',
+          gridTemplateRows: 'minmax(0, 1fr)',
           gap: 20,
           padding: '20px 24px',
-          minHeight: 'calc(100vh - 64px)',
           maxWidth: 1200,
           margin: '0 auto',
           width: '100%',
@@ -120,27 +118,26 @@ export default function GameView() {
             flexDirection: 'column',
             gap: 16,
             minWidth: 0,
+            minHeight: 0,
+            height: '100%',
+            overflow: 'hidden',
           }}
           className="left-sidebar"
         >
-          <GlassCard>
-            <h3
-              style={{
-                margin: '0 0 16px',
-                fontSize: 13,
-                fontWeight: 600,
-                color: '#94a3b8',
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                fontFamily: "'Space Grotesk', sans-serif",
-              }}
-            >
-              Информация
-            </h3>
+          <GlassCard style={{ flexShrink: 0, padding: 16 }}>
             <GameInfo />
           </GlassCard>
 
-          <GlassCard style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 200 }}>
+          <GlassCard
+            style={{
+              flex: 1,
+              minHeight: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              padding: '12px 14px',
+              overflow: 'hidden',
+            }}
+          >
             <MoveHistory />
           </GlassCard>
         </div>
@@ -152,13 +149,24 @@ export default function GameView() {
             alignItems: 'flex-start',
             justifyContent: 'center',
             paddingTop: 8,
+            minHeight: 0,
+            overflow: 'hidden',
           }}
         >
           <ChessBoard />
         </div>
 
         {/* Right sidebar: Ustaz */}
-        <div className="right-sidebar">
+        <div
+          className="right-sidebar"
+          style={{
+            minHeight: 0,
+            height: '100%',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
           <UstazPanel />
         </div>
       </div>
@@ -184,6 +192,6 @@ export default function GameView() {
           .right-sidebar { order: 3; }
         }
       `}</style>
-    </>
+    </div>
   )
 }

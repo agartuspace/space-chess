@@ -210,6 +210,8 @@ export default function UstazPanel() {
       style={{
         width: '100%',
         maxWidth: 320,
+        height: '100%',
+        minHeight: 0,
         background: 'rgba(13, 20, 36, 0.75)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
@@ -229,11 +231,23 @@ export default function UstazPanel() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
+          flexShrink: 0,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Waveform active={isSpeaking} />
-          <div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+          <img
+            src="/space-chess/ustaz-avatar.svg"
+            alt="Устаз"
+            width={44}
+            height={44}
+            style={{
+              borderRadius: '50%',
+              objectFit: 'cover',
+              flexShrink: 0,
+              border: '1px solid rgba(124, 58, 237, 0.35)',
+            }}
+          />
+          <div style={{ minWidth: 0 }}>
             <p
               style={{
                 margin: 0,
@@ -245,7 +259,10 @@ export default function UstazPanel() {
             >
               Устаз
             </p>
-            <StatusBadge status={coachStatus} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4, flexWrap: 'wrap' }}>
+              <StatusBadge status={coachStatus} />
+              <Waveform active={isSpeaking} />
+            </div>
           </div>
         </div>
         <button
@@ -269,8 +286,7 @@ export default function UstazPanel() {
       <div
         style={{
           padding: '14px 16px',
-          minHeight: 140,
-          maxHeight: 200,
+          minHeight: 0,
           overflowY: 'auto',
           flex: 1,
         }}
@@ -340,6 +356,7 @@ export default function UstazPanel() {
           display: 'flex',
           flexDirection: 'column',
           gap: 10,
+          flexShrink: 0,
         }}
       >
         {/* Main speak button */}
