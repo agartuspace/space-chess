@@ -6,12 +6,8 @@ import { motion } from 'framer-motion'
 import { useHydrationSafeReducedMotion } from '../../hooks/use-hydration-safe-reduced-motion'
 import { useShallow } from 'zustand/react/shallow'
 import { canMoveTo, tryMove } from '../../lib/chess-move'
+import { cburnettPieceSrc, chessPieceImgStyle } from '../../lib/piece-glyph'
 import { useGameStore } from '../../stores/game-store'
-
-const PIECE_UNICODE: Record<string, string> = {
-  wK: '♔', wQ: '♕', wR: '♖', wB: '♗', wN: '♘', wP: '♙',
-  bK: '♚', bQ: '♛', bR: '♜', bB: '♝', bN: '♞', bP: '♟',
-}
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const
 
@@ -274,7 +270,14 @@ export default function ChessBoard() {
                 lineHeight: 1,
               }}
             >
-              {piece ? PIECE_UNICODE[`${piece.color}${piece.type.toUpperCase()}`] : null}
+              {piece ? (
+                <img
+                  src={cburnettPieceSrc(piece.color, piece.type)}
+                  alt=""
+                  draggable={false}
+                  style={chessPieceImgStyle}
+                />
+              ) : null}
               {isLegal && !piece && (
                 <div
                   style={{
