@@ -1,13 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useHydrationSafeReducedMotion } from '../../hooks/use-hydration-safe-reduced-motion'
+import { useShallow } from 'zustand/react/shallow'
 import { useGameStore } from '../../stores/game-store'
 import { useUstaz } from '../../lib/coach/use-ustaz'
 
 // Animated waveform bars
 function Waveform({ active }: { active: boolean }) {
-  const prefersReducedMotion = useReducedMotion()
+  const prefersReducedMotion = useHydrationSafeReducedMotion()
   const heights = [14, 22, 18, 26, 16]
 
   return (
@@ -111,17 +113,19 @@ function TranscriptBubble({ role, text }: { role: 'user' | 'agent'; text: string
 }
 
 export default function UstazPanel() {
-  const prefersReducedMotion = useReducedMotion()
+  const prefersReducedMotion = useHydrationSafeReducedMotion()
   const [expanded, setExpanded] = useState(true)
   const [alwaysListen, setAlwaysListen] = useState(false)
   const [textInput, setTextInput] = useState('')
   const [showTextInput, setShowTextInput] = useState(false)
 
-  const { coachStatus, isCoachActive, transcript } = useGameStore((s) => ({
-    coachStatus: s.coachStatus,
-    isCoachActive: s.isCoachActive,
-    transcript: s.transcript,
-  }))
+  const { coachStatus, isCoachActive, transcript } = useGameStore(
+    useShallow((s) => ({
+      coachStatus: s.coachStatus,
+      isCoachActive: s.isCoachActive,
+      transcript: s.transcript,
+    })),
+  )
 
   const { startSession, endSession, sendMessage } = useUstaz()
 

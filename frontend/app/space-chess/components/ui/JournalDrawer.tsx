@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { useShallow } from 'zustand/react/shallow'
 import { useGameStore } from '../../stores/game-store'
 import { apiUrl } from '@/lib/api-url'
 import { authHeaders } from '@/lib/auth-token'
@@ -70,13 +71,15 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 }
 
 export default function JournalDrawer() {
-  const { journalOpen, setJournalOpen, userId, chessLevel, calibrationScore } = useGameStore((s) => ({
-    journalOpen: s.journalOpen,
-    setJournalOpen: s.setJournalOpen,
-    userId: s.userId,
-    chessLevel: s.chessLevel,
-    calibrationScore: s.calibrationScore,
-  }))
+  const { journalOpen, setJournalOpen, userId, chessLevel, calibrationScore } = useGameStore(
+    useShallow((s) => ({
+      journalOpen: s.journalOpen,
+      setJournalOpen: s.setJournalOpen,
+      userId: s.userId,
+      chessLevel: s.chessLevel,
+      calibrationScore: s.calibrationScore,
+    })),
+  )
 
   const [data, setData] = useState<ProgressData>(MOCK_DATA)
   const [loading, setLoading] = useState(false)

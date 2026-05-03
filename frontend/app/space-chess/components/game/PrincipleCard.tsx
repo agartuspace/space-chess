@@ -1,7 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useHydrationSafeReducedMotion } from '../../hooks/use-hydration-safe-reduced-motion'
+import { useShallow } from 'zustand/react/shallow'
 import { useGameStore } from '../../stores/game-store'
 
 const THEME_ICONS: Record<string, string> = {
@@ -17,11 +19,13 @@ const THEME_ICONS: Record<string, string> = {
 const CARD_DURATION = 8000
 
 export default function PrincipleCard() {
-  const prefersReducedMotion = useReducedMotion()
-  const { principleCard, setPrincipleCard } = useGameStore((s) => ({
-    principleCard: s.principleCard,
-    setPrincipleCard: s.setPrincipleCard,
-  }))
+  const prefersReducedMotion = useHydrationSafeReducedMotion()
+  const { principleCard, setPrincipleCard } = useGameStore(
+    useShallow((s) => ({
+      principleCard: s.principleCard,
+      setPrincipleCard: s.setPrincipleCard,
+    })),
+  )
 
   const [progress, setProgress] = useState(100)
 

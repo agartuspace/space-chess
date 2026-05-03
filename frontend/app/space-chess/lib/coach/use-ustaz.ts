@@ -37,25 +37,26 @@ async function fetchSignedUrl(): Promise<string> {
 }
 
 export function useUstaz() {
-  const store = useGameStore()
   const pendingMessageRef = useRef<string | null>(null)
 
   const conversation = useConversation({
     onConnect: () => {
-      store.setCoachStatus('listening')
-      store.setCoachActive(true)
+      const s = useGameStore.getState()
+      s.setCoachStatus('listening')
+      s.setCoachActive(true)
     },
     onDisconnect: () => {
-      store.setCoachStatus('idle')
-      store.setCoachActive(false)
+      const s = useGameStore.getState()
+      s.setCoachStatus('idle')
+      s.setCoachActive(false)
     },
     onMessage: ({ message, source }: { message: string; source: string }) => {
       const role = source === 'user' ? 'user' : 'agent'
-      store.addTranscriptMessage({ role, text: message })
+      useGameStore.getState().addTranscriptMessage({ role, text: message })
     },
     onError: (error: Error | string) => {
       console.error('[Ustaz] Error:', error)
-      store.setCoachStatus('error')
+      useGameStore.getState().setCoachStatus('error')
     },
   })
 
@@ -80,52 +81,66 @@ export function useUstaz() {
         brainTools.get_tactical_theme(params),
 
       highlight_squares: (params: { squares: string[]; color: string }) => {
-        uiTools.highlight_squares(params, store)
+        uiTools.highlight_squares(params, useGameStore.getState())
         return {}
       },
 
       draw_arrow: (params: { from: string; to: string; color: string }) => {
-        uiTools.draw_arrow(params, store)
+        uiTools.draw_arrow(params, useGameStore.getState())
         return {}
       },
 
       clear_annotations: () => {
-        uiTools.clear_annotations({}, store)
+        uiTools.clear_annotations({}, useGameStore.getState())
         return {}
       },
 
       show_principle_card: (params: { title: string; text: string; theme: string }) => {
-        uiTools.show_principle_card(params, store)
+        uiTools.show_principle_card(params, useGameStore.getState())
         return {}
       },
 
       offer_rewind: () => {
-        uiTools.offer_rewind({}, store)
+        uiTools.offer_rewind({}, useGameStore.getState())
         return {}
       },
 
       end_session: () => {
-        uiTools.end_session({}, store)
+        uiTools.end_session({}, useGameStore.getState())
         return {}
       },
     }
-  }, [store])
+  }, [])
 
   const startSession = useCallback(async () => {
+    const store = useGameStore.getState()
     try {
       store.setCoachStatus('connecting')
       const signedUrl = await fetchSignedUrl()
+      const s = useGameStore.getState()
+      const gameId = s.gameId
+      if (!gameId) throw new Error('gameId missing after fetchSignedUrl')
+      // Ключи = имена в {{...}} в system prompt / first message агента (snake_case, как в кабинете).
+      // Значения — строки: https://elevenlabs.io/docs/eleven-agents/customization/personalization/dynamic-variables
       await conversation.startSession({
         signedUrl,
+        dynamicVariables: {
+          user_name: 'Игрок',
+          user_level: String(s.chessLevel),
+          opponent_level: String(s.opponentLevel),
+          current_opening: '',
+          recent_principles: '',
+          game_id: String(gameId),
+        },
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         clientTools: buildClientTools() as any,
       })
     } catch (err) {
       console.error('[Ustaz] Failed to start session:', err)
-      store.setCoachStatus('error')
-      store.setCoachActive(false)
+      useGameStore.getState().setCoachStatus('error')
+      useGameStore.getState().setCoachActive(false)
     }
-  }, [conversation, store, buildClientTools])
+  }, [conversation, buildClientTools])
 
   const endSession = useCallback(async () => {
     try {
@@ -133,27 +148,25 @@ export function useUstaz() {
     } catch (err) {
       console.error('[Ustaz] Failed to end session:', err)
     } finally {
-      store.setCoachStatus('idle')
-      store.setCoachActive(false)
+      const s = useGameStore.getState()
+      s.setCoachStatus('idle')
+      s.setCoachActive(false)
     }
-  }, [conversation, store])
+  }, [conversation])
 
-  const sendMessage = useCallback(
-    (text: string) => {
-      store.addTranscriptMessage({ role: 'user', text })
-      // ElevenLabs conversational SDK doesn't expose a direct text injection method
-      // in the public API — store for potential use with server-side text fallback
-      pendingMessageRef.current = text
-    },
-    [store],
-  )
+  const sendMessage = useCallback((text: string) => {
+    useGameStore.getState().addTranscriptMessage({ role: 'user', text })
+    // ElevenLabs conversational SDK doesn't expose a direct text injection method
+    // in the public API — store for potential use with server-side text fallback
+    pendingMessageRef.current = text
+  }, [])
 
   const interruptIfSpeaking = useCallback(() => {
-    if (store.coachStatus === 'speaking') {
+    if (useGameStore.getState().coachStatus === 'speaking') {
       // @ts-expect-error — interrupt is not in the public type but exists in the SDK
       conversation.interrupt?.()
     }
-  }, [conversation, store.coachStatus])
+  }, [conversation])
 
   return {
     startSession,

@@ -212,6 +212,18 @@ AGENT_CONFIG = {
                 "помощь, или я сам подам голос если замечу что-то важное."
             ),
             "language": "ru",
+            # Без объявленных плейсхолдеров ElevenLabs часто оставляет {{user_name}} буквально в UI.
+            # Рантайм-значения всё равно шлёт фронт (use-ustaz.ts → startSession.dynamicVariables).
+            "dynamic_variables": {
+                "dynamic_variable_placeholders": {
+                    "user_name": "Игрок",
+                    "user_level": "beginner",
+                    "opponent_level": "5",
+                    "current_opening": "",
+                    "recent_principles": "",
+                    "game_id": "",
+                },
+            },
         },
         "tts": {
             "model_id": "eleven_flash_v2_5",

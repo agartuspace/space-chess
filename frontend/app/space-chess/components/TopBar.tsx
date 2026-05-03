@@ -1,19 +1,23 @@
 'use client'
 
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion } from 'framer-motion'
+import { useHydrationSafeReducedMotion } from '../hooks/use-hydration-safe-reduced-motion'
+import { useShallow } from 'zustand/react/shallow'
 import { useGameStore } from '../stores/game-store'
 
 export default function TopBar() {
-  const prefersReducedMotion = useReducedMotion()
+  const prefersReducedMotion = useHydrationSafeReducedMotion()
   const { userId, isGuest, setJournalOpen, setProModalOpen, setUstazExplainerOpen, setAuthModalOpen } =
-    useGameStore((s) => ({
-      userId: s.userId,
-      isGuest: s.isGuest,
-      setJournalOpen: s.setJournalOpen,
-      setProModalOpen: s.setProModalOpen,
-      setUstazExplainerOpen: s.setUstazExplainerOpen,
-      setAuthModalOpen: s.setAuthModalOpen,
-    }))
+    useGameStore(
+      useShallow((s) => ({
+        userId: s.userId,
+        isGuest: s.isGuest,
+        setJournalOpen: s.setJournalOpen,
+        setProModalOpen: s.setProModalOpen,
+        setUstazExplainerOpen: s.setUstazExplainerOpen,
+        setAuthModalOpen: s.setAuthModalOpen,
+      })),
+    )
 
   const isLoggedIn = !!(userId && !isGuest)
   const userInitial = isLoggedIn ? 'U' : null

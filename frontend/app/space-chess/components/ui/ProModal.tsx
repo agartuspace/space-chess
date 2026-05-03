@@ -1,6 +1,7 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
+import { useShallow } from 'zustand/react/shallow'
 import { useGameStore } from '../../stores/game-store'
 
 const FREE_FEATURES = ['15 мин Устаза в день', '3 задачи за партию', 'Журнал прогресса']
@@ -13,10 +14,12 @@ const PRO_FEATURES = [
 ]
 
 export default function ProModal() {
-  const { proModalOpen, setProModalOpen } = useGameStore((s) => ({
-    proModalOpen: s.proModalOpen,
-    setProModalOpen: s.setProModalOpen,
-  }))
+  const { proModalOpen, setProModalOpen } = useGameStore(
+    useShallow((s) => ({
+      proModalOpen: s.proModalOpen,
+      setProModalOpen: s.setProModalOpen,
+    })),
+  )
 
   const handleUpgrade = () => {
     alert('FreedomPay интеграция скоро')

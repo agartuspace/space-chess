@@ -1,6 +1,7 @@
 'use client'
 
-import { motion, useReducedMotion, type Transition } from 'framer-motion'
+import { motion, type Transition } from 'framer-motion'
+import { useHydrationSafeReducedMotion } from '../hooks/use-hydration-safe-reduced-motion'
 
 interface BlobConfig {
   id: string
@@ -43,7 +44,7 @@ const blobs: BlobConfig[] = [
 ]
 
 export default function NebulaBackground() {
-  const prefersReducedMotion = useReducedMotion()
+  const prefersReducedMotion = useHydrationSafeReducedMotion()
 
   return (
     <div

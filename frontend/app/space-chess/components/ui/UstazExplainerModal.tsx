@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { useShallow } from 'zustand/react/shallow'
 import { useGameStore } from '../../stores/game-store'
 
 const STEPS = [
@@ -26,11 +27,13 @@ const STEPS = [
 ]
 
 export default function UstazExplainerModal() {
-  const { ustazExplainerOpen, setUstazExplainerOpen, setAuthModalOpen } = useGameStore((s) => ({
-    ustazExplainerOpen: s.ustazExplainerOpen,
-    setUstazExplainerOpen: s.setUstazExplainerOpen,
-    setAuthModalOpen: s.setAuthModalOpen,
-  }))
+  const { ustazExplainerOpen, setUstazExplainerOpen, setAuthModalOpen } = useGameStore(
+    useShallow((s) => ({
+      ustazExplainerOpen: s.ustazExplainerOpen,
+      setUstazExplainerOpen: s.setUstazExplainerOpen,
+      setAuthModalOpen: s.setAuthModalOpen,
+    })),
+  )
   const [step, setStep] = useState(0)
 
   const current = STEPS[step]

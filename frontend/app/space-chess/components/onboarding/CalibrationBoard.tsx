@@ -3,6 +3,8 @@
 import { useState, useCallback } from 'react'
 import { Chess, type Square } from 'chess.js'
 import { motion } from 'framer-motion'
+import { useShallow } from 'zustand/react/shallow'
+import { canMoveTo, tryMove } from '../../lib/chess-move'
 import { useGameStore } from '../../stores/game-store'
 
 const CALIBRATION_PUZZLES = [
@@ -74,11 +76,13 @@ interface Props {
 
 export default function CalibrationBoard({ puzzleIndex }: Props) {
   const puzzle = CALIBRATION_PUZZLES[puzzleIndex]
-  const { addCalibrationPoint, nextCalibrationPuzzle, setScene } = useGameStore((s) => ({
-    addCalibrationPoint: s.addCalibrationPoint,
-    nextCalibrationPuzzle: s.nextCalibrationPuzzle,
-    setScene: s.setScene,
-  }))
+  const { addCalibrationPoint, nextCalibrationPuzzle, setScene } = useGameStore(
+    useShallow((s) => ({
+      addCalibrationPoint: s.addCalibrationPoint,
+      nextCalibrationPuzzle: s.nextCalibrationPuzzle,
+      setScene: s.setScene,
+    })),
+  )
 
   const [chess] = useState(() => new Chess(puzzle.fen))
   const [board, setBoard] = useState<BoardData>(() => parseFen(puzzle.fen))
@@ -112,7 +116,21 @@ export default function CalibrationBoard({ puzzleIndex }: Props) {
           return
         }
 
-        const result = chess.move({ from: selected as Square, to: sq as Square, promotion: 'q' })
+        const destPiece = board[sq]
+        const ownOnDest =
+          destPiece &&
+          ((isWhiteTurn && destPiece.color === 'w') || (!isWhiteTurn && destPiece.color === 'b'))
+        if (
+          ownOnDest &&
+          !canMoveTo(chess, selected as Square, sq as Square)
+        ) {
+          setSelected(sq)
+          const moves = chess.moves({ square: sq as Square, verbose: true })
+          setLegalMoves(moves.map((m) => m.to))
+          return
+        }
+
+        const result = tryMove(chess, selected as Square, sq as Square)
         if (result) {
           setBoard(parseFen(chess.fen()))
           setLastMove({ from: selected, to: sq })

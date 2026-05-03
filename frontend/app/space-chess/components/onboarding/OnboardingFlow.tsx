@@ -1,7 +1,9 @@
 'use client'
 
 import { useEffect } from 'react'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useHydrationSafeReducedMotion } from '../../hooks/use-hydration-safe-reduced-motion'
+import { useShallow } from 'zustand/react/shallow'
 import { useGameStore, type Scene, type ChessLevel } from '../../stores/game-store'
 import CalibrationBoard from './CalibrationBoard'
 
@@ -14,7 +16,7 @@ const fadeVariants = {
 const transition = { duration: 0.5, ease: 'easeInOut' as const }
 
 function SceneWrapper({ children, sceneKey }: { children: React.ReactNode; sceneKey: string }) {
-  const prefersReducedMotion = useReducedMotion()
+  const prefersReducedMotion = useHydrationSafeReducedMotion()
   return (
     <motion.div
       key={sceneKey}
@@ -167,12 +169,14 @@ function PuzzleScene({ index }: { index: number }) {
 }
 
 function CalibrateResultScene() {
-  const { calibrationScore, chessLevel, setScene, setChessLevel } = useGameStore((s) => ({
-    calibrationScore: s.calibrationScore,
-    chessLevel: s.chessLevel,
-    setScene: s.setScene,
-    setChessLevel: s.setChessLevel,
-  }))
+  const { calibrationScore, chessLevel, setScene, setChessLevel } = useGameStore(
+    useShallow((s) => ({
+      calibrationScore: s.calibrationScore,
+      chessLevel: s.chessLevel,
+      setScene: s.setScene,
+      setChessLevel: s.setChessLevel,
+    })),
+  )
 
   const levelMap: { threshold: number; level: ChessLevel; label: string; color: string; emoji: string }[] = [
     { threshold: 0, level: 'beginner', label: 'Начинающий', color: '#06b6d4', emoji: '🌱' },

@@ -1,17 +1,19 @@
 'use client'
 
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useHydrationSafeReducedMotion } from '../../hooks/use-hydration-safe-reduced-motion'
+import { useShallow } from 'zustand/react/shallow'
 import { useGameStore } from '../../stores/game-store'
 
 export default function RewindPrompt() {
-  const prefersReducedMotion = useReducedMotion()
+  const prefersReducedMotion = useHydrationSafeReducedMotion()
   const { rewindAvailable, lastBlunderFen, setRewindAvailable, setFen } = useGameStore(
-    (s) => ({
+    useShallow((s) => ({
       rewindAvailable: s.rewindAvailable,
       lastBlunderFen: s.lastBlunderFen,
       setRewindAvailable: s.setRewindAvailable,
       setFen: s.setFen,
-    }),
+    })),
   )
 
   const handleRewind = () => {

@@ -15,6 +15,8 @@ class Settings(BaseSettings):
 
     ELEVENLABS_API_KEY: str = ""
     ELEVENLABS_AGENT_ID: str = ""
+    # Optional: branch id from agent URL (?branchid=...) so signed URL targets that branch (e.g. draft).
+    ELEVENLABS_BRANCH_ID: str = ""
     ANTHROPIC_API_KEY: str = ""
 
     LICHESS_API_BASE: str = "https://lichess.org"

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { useShallow } from 'zustand/react/shallow'
 import { useGameStore } from '../../stores/game-store'
 import { apiUrl } from '@/lib/api-url'
 import { persistAccessToken } from '@/lib/auth-token'
@@ -100,10 +101,12 @@ function SubmitButton({ children, loading }: { children: React.ReactNode; loadin
 }
 
 function LoginTab() {
-  const { setUser, setAuthModalOpen } = useGameStore((s) => ({
-    setUser: s.setUser,
-    setAuthModalOpen: s.setAuthModalOpen,
-  }))
+  const { setUser, setAuthModalOpen } = useGameStore(
+    useShallow((s) => ({
+      setUser: s.setUser,
+      setAuthModalOpen: s.setAuthModalOpen,
+    })),
+  )
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -153,10 +156,12 @@ function LoginTab() {
 }
 
 function RegisterTab() {
-  const { setUser, setAuthModalOpen } = useGameStore((s) => ({
-    setUser: s.setUser,
-    setAuthModalOpen: s.setAuthModalOpen,
-  }))
+  const { setUser, setAuthModalOpen } = useGameStore(
+    useShallow((s) => ({
+      setUser: s.setUser,
+      setAuthModalOpen: s.setAuthModalOpen,
+    })),
+  )
   const [email, setEmail] = useState('')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -216,10 +221,12 @@ function RegisterTab() {
 }
 
 function GuestTab() {
-  const { setUser, setAuthModalOpen } = useGameStore((s) => ({
-    setUser: s.setUser,
-    setAuthModalOpen: s.setAuthModalOpen,
-  }))
+  const { setUser, setAuthModalOpen } = useGameStore(
+    useShallow((s) => ({
+      setUser: s.setUser,
+      setAuthModalOpen: s.setAuthModalOpen,
+    })),
+  )
   const [loading, setLoading] = useState(false)
 
   const handleGuest = async () => {
@@ -295,10 +302,12 @@ const TABS: { id: Tab; label: string }[] = [
 ]
 
 export default function AuthModal() {
-  const { authModalOpen, setAuthModalOpen } = useGameStore((s) => ({
-    authModalOpen: s.authModalOpen,
-    setAuthModalOpen: s.setAuthModalOpen,
-  }))
+  const { authModalOpen, setAuthModalOpen } = useGameStore(
+    useShallow((s) => ({
+      authModalOpen: s.authModalOpen,
+      setAuthModalOpen: s.setAuthModalOpen,
+    })),
+  )
   const [activeTab, setActiveTab] = useState<Tab>('login')
 
   return (

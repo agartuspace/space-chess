@@ -2,7 +2,10 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { Chess, type Square } from 'chess.js'
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion } from 'framer-motion'
+import { useHydrationSafeReducedMotion } from '../../hooks/use-hydration-safe-reduced-motion'
+import { useShallow } from 'zustand/react/shallow'
+import { canMoveTo, tryMove } from '../../lib/chess-move'
 import { useGameStore } from '../../stores/game-store'
 
 const PIECE_UNICODE: Record<string, string> = {
@@ -39,21 +42,23 @@ function findKingSquare(board: BoardData, color: 'w' | 'b'): string | null {
 }
 
 export default function ChessBoard() {
-  const prefersReducedMotion = useReducedMotion()
+  const prefersReducedMotion = useHydrationSafeReducedMotion()
   const {
     fen, setFen, addMove, playerColor, opponentLevel, annotations,
     rewindAvailable, lastBlunderFen, setRewindAvailable,
-  } = useGameStore((s) => ({
-    fen: s.fen,
-    setFen: s.setFen,
-    addMove: s.addMove,
-    playerColor: s.playerColor,
-    opponentLevel: s.opponentLevel,
-    annotations: s.annotations,
-    rewindAvailable: s.rewindAvailable,
-    lastBlunderFen: s.lastBlunderFen,
-    setRewindAvailable: s.setRewindAvailable,
-  }))
+  } = useGameStore(
+    useShallow((s) => ({
+      fen: s.fen,
+      setFen: s.setFen,
+      addMove: s.addMove,
+      playerColor: s.playerColor,
+      opponentLevel: s.opponentLevel,
+      annotations: s.annotations,
+      rewindAvailable: s.rewindAvailable,
+      lastBlunderFen: s.lastBlunderFen,
+      setRewindAvailable: s.setRewindAvailable,
+    })),
+  )
 
   const chessRef = useRef(new Chess(fen))
   const [board, setBoard] = useState<BoardData>(() => extractBoard(chessRef.current))
@@ -118,7 +123,23 @@ export default function ChessBoard() {
           return
         }
 
-        const result = chess.move({ from: selected as Square, to: sq as Square, promotion: 'q' })
+        const currentColor = playerColor === 'white' ? 'w' : 'b'
+        const destPiece = board[sq]
+        // Own piece on destination and no legal move there (e.g. switch selection) —
+        // skip tryMove entirely so chess.js never sees illegal { from, to }.
+        // Castling is kept: king legally moves onto the rook's square.
+        if (
+          destPiece &&
+          destPiece.color === currentColor &&
+          !canMoveTo(chess, selected as Square, sq as Square)
+        ) {
+          setSelected(sq)
+          const moves = chess.moves({ square: sq as Square, verbose: true })
+          setLegalMoves(moves.map((m) => m.to))
+          return
+        }
+
+        const result = tryMove(chess, selected as Square, sq as Square)
         if (result) {
           addMove(result.san)
           setLastMove({ from: selected, to: sq })
@@ -132,9 +153,7 @@ export default function ChessBoard() {
           return
         }
 
-        const piece = board[sq]
-        const currentColor = playerColor === 'white' ? 'w' : 'b'
-        if (piece && piece.color === currentColor) {
+        if (destPiece && destPiece.color === currentColor) {
           setSelected(sq)
           const moves = chess.moves({ square: sq as Square, verbose: true })
           setLegalMoves(moves.map((m) => m.to))

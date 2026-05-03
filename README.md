@@ -17,6 +17,8 @@ chess-learning/
 └── .env.example        # Образец переменных (скопировать в .env в корень)
 ```
 
+**Полный пошаговый гайд** (локально, Docker, ElevenLabs, ключи, troubleshooting): [`docs/local-run-guide.md`](./docs/local-run-guide.md).
+
 ## Быстрый старт (Docker)
 
 Из **корня** репозитория:

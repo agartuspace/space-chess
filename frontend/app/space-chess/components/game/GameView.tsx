@@ -1,5 +1,6 @@
 'use client'
 
+import { useShallow } from 'zustand/react/shallow'
 import { useGameStore } from '../../stores/game-store'
 import ChessBoard from './ChessBoard'
 import MoveHistory from './MoveHistory'
@@ -31,12 +32,14 @@ function GlassCard({ children, style }: { children: React.ReactNode; style?: Rea
 }
 
 function GameInfo() {
-  const { chessLevel, opponentLevel, playerColor, history } = useGameStore((s) => ({
-    chessLevel: s.chessLevel,
-    opponentLevel: s.opponentLevel,
-    playerColor: s.playerColor,
-    history: s.history,
-  }))
+  const { chessLevel, opponentLevel, playerColor, history } = useGameStore(
+    useShallow((s) => ({
+      chessLevel: s.chessLevel,
+      opponentLevel: s.opponentLevel,
+      playerColor: s.playerColor,
+      history: s.history,
+    })),
+  )
 
   const levelLabels: Record<string, string> = {
     beginner: 'Начинающий',

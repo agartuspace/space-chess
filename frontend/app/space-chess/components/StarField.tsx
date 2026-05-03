@@ -1,14 +1,14 @@
 'use client'
 
 import { useMemo } from 'react'
-import { useReducedMotion } from 'framer-motion'
+import { useHydrationSafeReducedMotion } from '../hooks/use-hydration-safe-reduced-motion'
 
 interface Star {
   id: number
   top: string
   left: string
   size: number
-  opacity: number
+  opacity: string
   animationDelay: string
   animationDuration: string
 }
@@ -19,17 +19,17 @@ function seededRandom(seed: number) {
 }
 
 export default function StarField() {
-  const prefersReducedMotion = useReducedMotion()
+  const prefersReducedMotion = useHydrationSafeReducedMotion()
 
   const stars = useMemo<Star[]>(() => {
     return Array.from({ length: 80 }, (_, i) => ({
       id: i,
-      top: `${seededRandom(i * 3) * 100}%`,
-      left: `${seededRandom(i * 3 + 1) * 100}%`,
+      top: `${(seededRandom(i * 3) * 100).toFixed(2)}%`,
+      left: `${(seededRandom(i * 3 + 1) * 100).toFixed(2)}%`,
       size: seededRandom(i * 3 + 2) < 0.7 ? 1 : seededRandom(i * 3 + 2) < 0.9 ? 2 : 3,
-      opacity: 0.3 + seededRandom(i * 7) * 0.7,
-      animationDelay: `${seededRandom(i * 5) * 4}s`,
-      animationDuration: `${2 + seededRandom(i * 11) * 3}s`,
+      opacity: (0.3 + seededRandom(i * 7) * 0.7).toFixed(5),
+      animationDelay: `${(seededRandom(i * 5) * 4).toFixed(3)}s`,
+      animationDuration: `${(2 + seededRandom(i * 11) * 3).toFixed(3)}s`,
     }))
   }, [])
 

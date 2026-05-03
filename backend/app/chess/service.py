@@ -123,34 +123,30 @@ class ChessService:
         self, settings: Settings, data: CoachSessionRequest
     ) -> CoachSessionResponse:
         session_id = str(uuid.uuid4())
-        dynamic_variables: dict[str, Any] = {
-            "user_name": data.user_name,
-            "user_level": data.user_level,
-            "opponent_level": str(data.opponent_level),
-            "current_opening": data.current_opening,
-            "recent_principles": ", ".join(data.recent_principles),
-            "game_id": str(data.game_id),
-        }
+        # `data` is still validated by the route (game context for rate limits / future logging).
+        # ElevenLabs signed-URL endpoint only accepts GET + query `agent_id`; dynamic variables
+        # are sent from the client in `startSession({ dynamicVariables })` (see @elevenlabs/client).
 
-        if not settings.ELEVENLABS_API_KEY.strip() or not settings.ELEVENLABS_AGENT_ID.strip():
+        api_key = settings.ELEVENLABS_API_KEY.strip()
+        agent_id = settings.ELEVENLABS_AGENT_ID.strip().strip("?").strip()
+        if not api_key or not agent_id:
             msg = (
                 "ElevenLabs is not configured. Set ELEVENLABS_API_KEY and ELEVENLABS_AGENT_ID in the backend `.env`."
             )
             raise ValueError(msg)
 
-        url = (
-            "https://api.elevenlabs.io/v1/convai/conversation/get_signed_url"
-            f"?agent_id={settings.ELEVENLABS_AGENT_ID}"
-        )
         import httpx  # defer import keeps tests light
 
+        params: dict[str, str] = {"agent_id": agent_id}
+        branch = settings.ELEVENLABS_BRANCH_ID.strip()
+        if branch:
+            params["branch_id"] = branch
+
         async with httpx.AsyncClient(timeout=20) as client:
-            resp = await client.post(
-                url,
-                headers={"xi-api-key": settings.ELEVENLABS_API_KEY},
-                json={
-                    "conversation_initiation_client_data": {"dynamic_variables": dynamic_variables},
-                },
+            resp = await client.get(
+                "https://api.elevenlabs.io/v1/convai/conversation/get_signed_url",
+                params=params,
+                headers={"xi-api-key": api_key},
             )
             resp.raise_for_status()
 
