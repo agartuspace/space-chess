@@ -1,0 +1,148 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-midnight: #0a0e1a;
+  --color-midnight-2: #0d1424;
+  --color-midnight-3: #111827;
+  --color-nebula-purple: #7c3aed;
+  --color-nebula-blue: #2563eb;
+  --color-nebula-pink: #db2777;
+  --color-sky-cyan: #06b6d4;
+  --color-sky-cyan-dim: #0891b2;
+  --color-aurora-gold: #f59e0b;
+  --color-aurora-gold-dim: #d97706;
+  --color-aurora-star: #f8fafc;
+  --color-aurora-muted: #94a3b8;
+  --color-aurora-muted-dark: #475569;
+  --color-board-dark: #1e1b4b;
+  --color-board-light: #c7d2fe;
+
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+
+  --shadow-glow-purple: 0 0 30px rgba(124, 58, 237, 0.3), 0 0 60px rgba(124, 58, 237, 0.1);
+  --shadow-glow-cyan: 0 0 20px rgba(6, 182, 212, 0.4);
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2);
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-float-delayed: float 8s ease-in-out 2s infinite;
+  --animate-breathe: breathe 4s ease-in-out infinite;
+  --animate-pulse-glow: pulseGlow 2s ease-in-out infinite;
+  --animate-shimmer: shimmer 2s linear infinite;
+  --animate-star-twinkle: starTwinkle 3s ease-in-out infinite;
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-12px); }
+  }
+  @keyframes breathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.012); }
+  }
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 20px rgba(124, 58, 237, 0.3); }
+    50% { box-shadow: 0 0 40px rgba(124, 58, 237, 0.6), 0 0 80px rgba(124, 58, 237, 0.2); }
+  }
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  @keyframes starTwinkle {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+}
+
+:root {
+  --midnight: #0a0e1a;
+  --midnight-2: #0d1424;
+  --midnight-3: #111827;
+  --nebula-purple: #7c3aed;
+  --nebula-blue: #2563eb;
+  --nebula-pink: #db2777;
+  --sky-cyan: #06b6d4;
+  --sky-cyan-dim: #0891b2;
+  --gold: #f59e0b;
+  --gold-dim: #d97706;
+  --star-white: #f8fafc;
+  --muted: #94a3b8;
+  --muted-dark: #475569;
+  --board-dark: #1e1b4b;
+  --board-light: #c7d2fe;
+  --glass-bg: rgba(13, 20, 36, 0.7);
+  --glass-border: rgba(124, 58, 237, 0.2);
+  --glow-purple: rgba(124, 58, 237, 0.4);
+  --glow-cyan: rgba(6, 182, 212, 0.4);
+
+  --shadow-glow-purple: 0 0 30px rgba(124, 58, 237, 0.3), 0 0 60px rgba(124, 58, 237, 0.1);
+  --shadow-glow-cyan: 0 0 20px rgba(6, 182, 212, 0.4);
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2);
+
+  --background: var(--midnight);
+  --foreground: var(--star-white);
+  --radius: 0.625rem;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  background: var(--midnight);
+  color: var(--star-white);
+  font-family: 'Inter', system-ui, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+}
+
+/* Chessground custom Aurora theme */
+.cg-wrap {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow-glow-purple);
+}
+
+cg-board {
+  background-image: none !important;
+}
+
+.cg-wrap cg-board square.light {
+  background-color: #c7d2fe;
+}
+.cg-wrap cg-board square.dark {
+  background-color: #1e1b4b;
+}
+.cg-wrap cg-board square.last-move {
+  background-color: rgba(245, 158, 11, 0.4) !important;
+}
+.cg-wrap cg-board square.selected {
+  background-color: rgba(6, 182, 212, 0.5) !important;
+}
+.cg-wrap cg-board square.move-dest {
+  background: radial-gradient(circle, rgba(6,182,212,0.5) 25%, transparent 26%) !important;
+}
+.cg-wrap cg-board square.oc.move-dest {
+  background: radial-gradient(circle, rgba(6,182,212,0.0) 0%, rgba(6,182,212,0.0) 79%, rgba(6,182,212,0.5) 80%) !important;
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--midnight-2); }
+::-webkit-scrollbar-thumb { background: var(--nebula-purple); border-radius: 2px; }
